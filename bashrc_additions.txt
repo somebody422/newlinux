@@ -1,0 +1,8 @@
+
+PATH=$PATH:~/.local/bin
+
+
+# Some notes on PS1:
+# * \e[...m will add some formatting to your text
+# * \e[0m will clear all formatting
+export PS1="\n\e[34m\t \e[31m\$? \e[36m\u:\e[33m\w\n\e[0m\\$ \e[0m"

@@ -23,6 +23,10 @@ apt_install_packages = [
 def main():
 	runCommands(apt_install_packages)
 
+	runCommand('mkdir ~/bin')
+
+	appendFile('./bashrc_additions.txt', '~/.bashrc')
+
 
 
 def runCommands(commands, exit_on_fail=False):
@@ -31,10 +35,12 @@ def runCommands(commands, exit_on_fail=False):
 		if exit_on_fail and exit_code != 0:
 			return
 
+
 # Runs the given text as a command, then returns the error code
 def runCommand(args):
 	completed_process = subprocess.run(args.split())
 	return completed_process.returncode
+
 
 # Copy all text from one file to another
 def appendFile(from_file, to_file):
