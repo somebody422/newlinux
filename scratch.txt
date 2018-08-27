@@ -1,0 +1,10 @@
+
+
+group commands together? If one fails it could cause the group to exit
+
+
+Things to configure or do:
+ * git settings (user info, core editor)
+ * add repositories
+ * download commonly needed packages
+ * add to .bashrc
