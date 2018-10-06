@@ -6,6 +6,4 @@ PATH=$PATH:~/.local/bin
 # * \e[...m will add some formatting to your text
 # * \e[0m will clear all formatting
 # \[ and \] should surround non-printed characters
-#export PS1="\n\e[34mRED\e[0m\n$ ". HOWEVER I have noticed that this is only necessary in the LAST line of the PS1 prompt
-#export PS1="\n\[\e[34m\]\t \[\e[31m\]\$? \[\e[36m\]\u:\[\e[33m\]\w\n\[\e[0m\]\n$ \[\e[0m\]"
 export PS1="\n\e[34m\t \e[31m\$? \e[36m\u:\e[33m\w\e[0m\n$ \[\e[0m\]"
