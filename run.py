@@ -43,8 +43,12 @@ def runCommand(args):
 
 
 # Copy all text from one file to another
-def appendFile(from_file, to_file):
-	pass
+def appendFile(from_filepath, to_filepath):
+	from_file = open(from_filepath, 'r')
+	to_file = open(to_filepath, 'a')
+	#to_file.write(os.linsep) # TODO: do i want this?
+	for line in from_file:
+		to_file.write(line)
 
 
 if __name__ == '__main__':
