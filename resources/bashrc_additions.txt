@@ -1,5 +1,5 @@
 
-PATH=$PATH:~/.local/bin
+PATH=$PATH:~/bin
 
 
 # Some notes on PS1:
