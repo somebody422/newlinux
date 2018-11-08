@@ -1,0 +1,15 @@
+
+
+" Do i need this?
+color ron
+
+set shell=/bin/bash
+
+noremap ; l
+noremap l k
+noremap k j
+noremap j h
+noremap h ;
+
+set tabstop = 3 noexpandtab
+

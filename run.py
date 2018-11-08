@@ -11,20 +11,21 @@ import sys
 import subprocess
 
 
-newlinux_header = "#!#!# start newlinux additions #!#!#"
-newlinux_footer = "#!#!# end newlinux additions #!#!#"
+newlinux_header = "===== start newlinux additions ====="
+newlinux_footer = "===== end newlinux additions ====="
 
 apt_add_additional_repositories = [
 
 ]
 
 apt_install_packages = [
-	'sudo apt-get install python',
-	'sudo apt-get install tree',
+#	'sudo apt-get install python',
+	'sudo apt install tree',
 ]
 
 file_additions = [
-	(os.path.expanduser('~/.bashrc'), 'additions/bashrc_additions.txt'),
+	#(os.path.expanduser('~/.bashrc'), 'resources/bashrc_additions.txt', '#'),
+	('./testfile', 'resources/vimrc_additions.txt', '\"'),
 ]
 
 def main():
@@ -33,7 +34,7 @@ def main():
 	#appendFile('./bashrc_additions.txt', '~/.bashrc')
 	#insert_additions('./testfile', 'testfile_additions.txt')
 	for file_addition in file_additions:
-		insert_additions(file_addition[0], file_addition[1])
+		insert_additions(file_addition[0], file_addition[1], comment_type=file_addition[2])
 
 
 def runCommands(commands, exit_on_fail=False):
@@ -59,59 +60,54 @@ def appendFile(from_filepath, to_filepath):
 
 # Create a 'newlinux' section at the end of target text file if it doesn't exist already. Copy the contents of the additions file into that section
 # If a newlinux section already exists, this will replace its contents
-def insert_additions(old_file_path, additions_file_path):
-	if not os.path.exists(old_file_path):
-		print("ERROR: insert_additions given bad old file: {0}".format(old_file_path))
-		return
-	elif not os.path.exists(additions_file_path):
+def insert_additions(old_file_path, additions_file_path, comment_type=''):
+	if not os.path.exists(additions_file_path):
 		print("ERROR: insert_additions given bad additions file: {0}".format(additions_file_path))
 		return
+
+	header = comment_type + newlinux_header
+	footer = comment_type + newlinux_footer
 	
 	additions_file = open(additions_file_path)
 	additions = additions_file.read()
 	additions_file.close()
 
-	old_file = open(old_file_path, 'r')
-	# Okay, if the file is too big we will have problems. Rework this if necessary..
-	old_file_contents = old_file.read()
-	header_index = old_file_contents.find(newlinux_header)
-	if header_index == -1:
-		print("Couldn't find header. adding it at the end")
-		# Header was not in the file, so we can just append on the additions
+	# create new_contents
+	if os.path.exists(old_file_path):
+		old_file = open(old_file_path, 'r')
+		# We will have problems if the file is to big. Rework this if necessary
+		new_contents = old_file.read()
 		old_file.close()
-		old_file = open(old_file_path, 'a')
-		old_file.write('\n\n'+newlinux_header+'\n')
-		old_file.write(additions)
-		old_file.write('\n'+newlinux_footer+'\n\n')
-		old_file.close()
-	else:
-		footer_index = old_file_contents.find(newlinux_footer)
-		if footer_index == -1:
-			print("ERROR: Found header but not footer!")
-			return
-		elif footer_index < header_index:
-			print("ERROR: Footer found before header??")
-			return
 
-		print("Found the newlinux section at {0}:{1}! Replacing contents..".format(header_index, footer_index))
+		header_index = new_contents.find(header)
+		if header_index == -1:
+			# Header was not in the file, so append it
+			new_contents += '\n\n' + newlinux_header + '\n' + additions + '\n' + newlinux_footer + '\n\n'
+		else:
+			# again, not sure if this will work with very long files
+			footer_index = new_contents.find(footer)
+			if footer_index == -1:
+				print("ERROR: found header but not footer")
+				return
+			elif footer_index < header_index:
+				print("ERROR: found footer.. before header? exiting??")
+				return
 
-		#print("Start of current header: \"{0}\"".format(old_file_contents[header_index:header_index+8]))
-		#print("Start of section after footer: \"{0}\"".format(old_file_contents[footer_index+len(newlinux_footer):footer_index+len(newlinux_footer)+8]))
-		# Header has been found starting at index header_index
-		# Instead of trying to add to the middle of the file, just copy contents to a new one
-		post_footer_index = footer_index+len(newlinux_footer)
-		#todo: check for existing file?
-		new_file = open(old_file_path + '.tmp', 'w')
-		new_file.write(old_file_contents[:header_index])
-		new_file.write(newlinux_header+'\n')
-		new_file.write(additions)
-		new_file.write('\n'+newlinux_footer)
-		new_file.write(old_file_contents[post_footer_index:])
-		new_file.close()
-		runCommand('mv {0} {0}.old'.format(old_file_path))
-		runCommand('mv {0}.tmp {0}'.format(old_file_path))
+			print("Found newlinux section at {0}:{1}".format(header_index, footer_index))
+			new_contents = new_contents[:header_index] + header + '\n' + additions + '\n' + footer + new_contents[footer_index+len(footer):]
 
+	else: #old_file does not exist
+		new_contents = '\n' + header + '\n' + additions + '\n' + footer
+
+	if os.path.exists(old_file_path):
+		os.rename(old_file_path, old_file_path + '.old')
+	new_file = open(old_file_path, 'w')
+	new_file.write(new_contents)
+	new_file.close()
 	
+
+
 
 if __name__ == '__main__':
 	main()
+
