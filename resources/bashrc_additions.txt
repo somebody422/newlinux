@@ -6,4 +6,4 @@ PATH=$PATH:~/bin
 # * \e[...m will add some formatting to your text
 # * \e[0m will clear all formatting
 # \[ and \] should surround non-printed characters
-export PS1="\n\e[34m\t \e[31m\$? \e[36m\u:\e[33m\w\e[0m\n$ \[\e[0m\]"
+export PS1="\n\e[33m\t \e[31m\$? \e[36m\u:\e[33m\w\e[0m\n$ \[\e[0m\]"
