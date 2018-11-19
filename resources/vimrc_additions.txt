@@ -11,5 +11,5 @@ noremap k j
 noremap j h
 noremap h ;
 
-set tabstop = 3 noexpandtab
+set tabstop=3 noexpandtab
 
