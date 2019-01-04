@@ -11,30 +11,74 @@ import sys
 import subprocess
 
 
+
 newlinux_header = "===== start newlinux additions ====="
 newlinux_footer = "===== end newlinux additions ====="
 
-apt_add_additional_repositories = [
+package_install_prefix = {
+	'apt': 'sudo apt install -yqq',
+	'pacman': 'sudo pacman -S',
+}
 
+extra_packages = [
+	'tree',
+	'git',
+	'vim',
 ]
 
-apt_install_packages = [
-#	'sudo apt-get install python',
-	'sudo apt install tree',
+# Will run first, in order of the list
+# Shouldn't be moving anything from the resources directory here, unless there is a need to move something early in the process
+run_these_first = [
+	'mkdir ~/bin',
 ]
 
-file_additions = [
-	#(os.path.expanduser('~/.bashrc'), 'resources/bashrc_additions.txt', '#'),
-	('./testfile', 'resources/vimrc_additions.txt', '\"'),
+
+# Something in the resources folder which should be copied to the host system
+class Resource:
+	def __init__(self, resource_name, destination, default_mode, can_use_additions=False, comment_type=''):
+		self.resource_name = resource_name
+		self.resource_path = os.path.join('./resources/', self.resource_name)
+		self.destination = destination
+		if default_mode not in ('copy', 'addition', 'append'):
+			raise ValueError("Unrecognized default_mode in Resource constructor: \"" + default_mode + "\"")
+		self.default_mode = default_mode
+		self.can_use_additions = True if default_mode=="addition" else can_use_additions
+		# comment_type is only relevant if we are using additions
+		self.comment_type = comment_type
+
+resources = [
+	Resource("vimrc.txt", "~/.vimrc", "copy", can_use_additions=True, comment_type='\"'),
+	Resource("bashrc.txt", "~/.bashrc", "copy", can_use_additions=True, comment_type='#'),
 ]
+
 
 def main():
-	#runCommands(apt_install_packages)
-	#runCommand('mkdir ~/bin')
-	#appendFile('./bashrc_additions.txt', '~/.bashrc')
-	#insert_additions('./testfile', 'testfile_additions.txt')
-	for file_addition in file_additions:
-		insert_additions(file_addition[0], file_addition[1], comment_type=file_addition[2])
+	## Set up config ##
+	package_manager_input = input("What is your package manager?  ")
+	try:
+		pm_prefix = package_install_prefix[package_manager_input]
+	except KeyError:
+		print("Don't know that package manager :(")
+		sys.exit(1)
+	use_additions_input = input("Use \'newlinux\' addition sections? (y/n, default n)  ")
+	use_additions = use_additions_input in ('y', 'yes', 'Y', 'Yes', 'YES')
+
+	
+	print("\nInstalling extra packages:")
+	for package in extra_packages:
+		os.system(pm_prefix + ' ' + package)
+
+	print("\nCopying resources:")
+	for r in resources:
+		if use_additions and r.can_use_additions:
+			insert_additions(r.resource_path, r.destination, comment_type=r.comment_type)
+		elif r.default_mode == 'copy'
+			os.system('cp ' + r.resource_path + ' ' + r.destination)
+		elif r.default_mode == 'append':
+			os.system('cat ' + r.resource_path ' >> ' + r.destination)
+
+	#for file_addition in file_additions:
+	#	insert_additions(file_addition[0], file_addition[1], comment_type=file_addition[2])
 
 
 def runCommands(commands, exit_on_fail=False):

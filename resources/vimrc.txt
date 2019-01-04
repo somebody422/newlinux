@@ -1,0 +1,26 @@
+
+
+" Do i need this?
+color ron
+syntax on
+
+set shell=/bin/bash
+
+nnoremap ; l
+nnoremap l k
+nnoremap k j
+nnoremap j h
+nnoremap h ;
+
+nnoremap <C-k> 3<C-e>
+nnoremap <C-l> 3<C-y>
+nnoremap <C-h> 0
+nnoremap <C-j> $
+
+
+
+set tabstop=3 noexpandtab
+
+
+
+
