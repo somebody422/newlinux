@@ -35,20 +35,20 @@ run_these_first = [
 
 # Something in the resources folder which should be copied to the host system
 class Resource:
-	def __init__(self, resource_name, destination, default_mode, can_use_additions=False, comment_type=''):
+	def __init__(self, resource_name, destination, default_mode, is_text_file=False, comment_type=''):
 		self.resource_name = resource_name
 		self.resource_path = os.path.join('./resources/', self.resource_name)
 		self.destination = destination
 		if default_mode not in ('copy', 'addition', 'append'):
 			raise ValueError("Unrecognized default_mode in Resource constructor: \"" + default_mode + "\"")
 		self.default_mode = default_mode
-		self.can_use_additions = True if default_mode=="addition" else can_use_additions
+		self.is_text_file = is_text_file
 		# comment_type is only relevant if we are using additions
 		self.comment_type = comment_type
 
 resources = [
-	Resource("vimrc.txt", "~/.vimrc", "copy", can_use_additions=True, comment_type='\"'),
-	Resource("bashrc.txt", "~/.bashrc", "copy", can_use_additions=True, comment_type='#'),
+	Resource("vimrc.txt", "~/.vimrc", "copy", is_text_file=True, comment_type='\"'),
+	Resource("bashrc.txt", "~/.bashrc", "copy", is_text_file=True, comment_type='#'),
 ]
 
 
@@ -63,6 +63,13 @@ def main():
 	use_additions_input = input("Use \'newlinux\' addition sections? (y/n, default n)  ")
 	use_additions = use_additions_input in ('y', 'yes', 'Y', 'Yes', 'YES')
 
+	# todo: a more interactive menu: can configure mode for each resource. Starts with default mode
+	mode = input("Which mode for copying resources? (copy, add, append)  ");
+	if mode not in ('copy', 'add', 'append'):
+		print("Don't recognize that mode")
+		sys.exit(2)
+
+
 	
 	print("\nInstalling extra packages:")
 	for package in extra_packages:
@@ -70,12 +77,12 @@ def main():
 
 	print("\nCopying resources:")
 	for r in resources:
-		if use_additions and r.can_use_additions:
+		if use_additions and r.is_text_file:
 			insert_additions(r.resource_path, r.destination, comment_type=r.comment_type)
-		elif r.default_mode == 'copy'
+		elif mode == 'copy':
 			os.system('cp ' + r.resource_path + ' ' + r.destination)
-		elif r.default_mode == 'append':
-			os.system('cat ' + r.resource_path ' >> ' + r.destination)
+		elif mode == 'append':
+			os.system('cat ' + r.resource_path + ' >> ' + r.destination)
 
 	#for file_addition in file_additions:
 	#	insert_additions(file_addition[0], file_addition[1], comment_type=file_addition[2])
