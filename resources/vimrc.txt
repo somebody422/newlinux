@@ -21,6 +21,4 @@ nnoremap <C-j> $
 
 set tabstop=3 noexpandtab
 
-syntax on
-
 
